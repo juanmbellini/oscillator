@@ -1,0 +1,34 @@
+# Default configuration
+
+spring:
+    profiles:
+        active: dev
+    main:
+        banner-mode: "off"
+custom:
+    system:
+    simulation:
+
+
+---
+# Configuration for Development Environment
+
+spring:
+    profiles:
+        - dev
+        - development
+
+
+logging:
+    config: classpath:logging/logback-spring-dev.xml
+
+---
+# Configuration for Production Environment
+
+spring:
+    profiles:
+        - prod
+        - production
+
+logging:
+    config: classpath:logging/logback-spring-prod.xml
