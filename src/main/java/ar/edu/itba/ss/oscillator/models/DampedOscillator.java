@@ -95,6 +95,19 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
         return particle;
     }
 
+    /**
+     * @return The spring constant (in kilograms over square seconds).
+     */
+    public double getSpringConstant() {
+        return springConstant;
+    }
+
+    /**
+     * @return The viscous damping coefficient (in kilograms over seconds).
+     */
+    public double getViscousDampingCoeffcient() {
+        return viscousDampingCoeffcient;
+    }
 
     /**
      * @return The time step (i.e how much time elapses between two update events).
