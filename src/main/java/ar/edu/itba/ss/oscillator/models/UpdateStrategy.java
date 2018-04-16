@@ -12,4 +12,11 @@ public interface UpdateStrategy {
      * @return The calcualted results.
      */
     UpdateResults calculate(DampedOscillator dampedOscillator);
+
+    /**
+     * Updates the system.
+     *
+     * @param dampedOscillator The damped oscillator that acts as the system to be updated.
+     */
+    void update(DampedOscillator dampedOscillator);
 }

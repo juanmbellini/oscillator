@@ -127,12 +127,7 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
 
     @Override
     public void update() {
-        // TODO: make this here or let the strategy to decide how this is done? i.e gear may be difficult like this
-        final UpdateResults results = updateStrategy.calculate(this);
-        particle.setPosition(results.getPosition());
-        particle.setVelocity(results.getVelocity());
-        // Calculate acceleration using new values
-        particle.setAcceleration(forceProvider.apply(particle).scalarMultiply(1 / particle.getMass()));
+        this.updateStrategy.update(this);
         this.actualTime += timeStep;
     }
 
