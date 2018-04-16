@@ -33,7 +33,7 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
     private final Function<Particle, Vector2D> forceProvider;
 
     /**
-     * The {@link UpdateStrategy} that states how position and velocity are changed.
+     * The {@link UpdateStrategy} used to calculate new values.
      */
     private final UpdateStrategy updateStrategy;
 
@@ -61,7 +61,7 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
      *                                  (i.e if positive, it is stretched; if negative, it is compressed).
      * @param springConstant            The spring constant (in kilograms over square seconds).
      * @param viscousDampingCoefficient The viscous damping coefficient (in kilograms over seconds).
-     * @param updateStrategy            The {@link UpdateStrategy} that states how position and velocity are changed.
+     * @param updateStrategy            The {@link UpdateStrategy} used to calculate new values.
      * @param timeStep                  The time step (i.e how much time elapses between two update events).
      * @param totalTime                 The total oscillating time.
      */
@@ -89,6 +89,21 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
     }
 
     /**
+     * @return The particle to be oscillated.
+     */
+    public Particle getParticle() {
+        return particle;
+    }
+
+
+    /**
+     * @return The time step (i.e how much time elapses between two update events).
+     */
+    public double getTimeStep() {
+        return timeStep;
+    }
+
+    /**
      * @return The total oscillating time.
      */
     public double getTotalTime() {
@@ -112,20 +127,12 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
 
     @Override
     public void update() {
-        // TODO: update position, velocity and acceleration
-        switch (updateStrategy) {
-            case VERLET: {
-                break;
-            }
-            case BEEMAN: {
-                break;
-            }
-            case GEAR: {
-                break;
-            }
-            default:
-                throw new RuntimeException("This should not happen.");
-        }
+        // TODO: make this here or let the strategy to decide how this is done? i.e gear may be difficult like this
+        final UpdateResults results = updateStrategy.calculate(this);
+        particle.setPosition(results.getPosition());
+        particle.setVelocity(results.getVelocity());
+        // Calculate acceleration using new values
+        particle.setAcceleration(forceProvider.apply(particle).scalarMultiply(1 / particle.getMass()));
         this.actualTime += timeStep;
     }
 
@@ -154,7 +161,7 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
          * @param dampedOscillator The {@link DampedOscillator} whose state will be saved.
          */
         public DampedOscillatorState(DampedOscillator dampedOscillator) {
-            this.particleState = dampedOscillator.particle.outputState();
+            this.particleState = dampedOscillator.getParticle().outputState();
         }
 
         /**

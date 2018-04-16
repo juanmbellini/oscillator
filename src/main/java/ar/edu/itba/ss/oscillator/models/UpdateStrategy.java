@@ -1,19 +1,15 @@
 package ar.edu.itba.ss.oscillator.models;
 
 /**
- * Defines the update strategies.
+ * Defines behaviour for an object in charge of updating position and velocity.
  */
-public enum UpdateStrategy {
+public interface UpdateStrategy {
+
     /**
-     * Updates the system according to Verlet's equations.
+     * Calculates the new position and velocity, wrapped in an {@link UpdateResults} instance.
+     *
+     * @param dampedOscillator The damped oscillator that acts as the system to be updated.
+     * @return The calcualted results.
      */
-    VERLET,
-    /**
-     * Updates the system according to Beeman's equations.
-     */
-    BEEMAN,
-    /**
-     * Updates the system according to Order 5 Gear Predictor-Corrector equations.
-     */
-    GEAR,
+    UpdateResults calculate(DampedOscillator dampedOscillator);
 }
