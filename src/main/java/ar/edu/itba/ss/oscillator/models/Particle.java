@@ -12,7 +12,7 @@ public class Particle implements StateHolder<Particle.ParticleState> {
     /**
      * The particle's mass (in kilograms).
      */
-    private double mass;
+    private final double mass;
 
     /**
      * The particle's position (represented as a 2D vector).
@@ -42,17 +42,33 @@ public class Particle implements StateHolder<Particle.ParticleState> {
     /**
      * Constructor.
      *
+     * @param mass                The particle's mass (in kilograms).
+     * @param initialPosition     The starting position of the particle.
+     * @param initialVelocity     The starting velocity of the particle.
+     * @param initialAcceleration The starting acceleration of the particle.
+     */
+    public Particle(final double mass,
+                    final Vector2D initialPosition,
+                    final Vector2D initialVelocity,
+                    final Vector2D initialAcceleration) {
+        this.mass = mass;
+        this.position = initialPosition;
+        this.velocity = initialVelocity;
+        this.acceleration = initialAcceleration;
+
+        this.previousAcceleration = null;
+        this.previousPosition = null;
+    }
+
+    /**
+     * Constructor.
+     *
      * @param mass      The particle's mass (in kilograms).
      * @param xPosition The particle's 'x' component of the position.
      * @param xVelocity The particle's 'x' component of the velocity.
      */
     public Particle(final double mass, final double xPosition, final double xVelocity) {
-        this.mass = mass;
-        this.position = new Vector2D(xPosition, 0);
-        this.velocity = new Vector2D(xVelocity, 0);
-        acceleration = new Vector2D(0, 0);
-        previousAcceleration = acceleration;
-        previousPosition = null;
+        this(mass, new Vector2D(xPosition, 0), new Vector2D(xVelocity, 0), new Vector2D(0, 0));
     }
 
     /**
@@ -91,8 +107,36 @@ public class Particle implements StateHolder<Particle.ParticleState> {
     }
 
     /**
-     * Verlet equations.
+     * Sets a new position.
+     *
+     * @param position The new position.
      */
+    public void setPosition(Vector2D position) {
+        this.position = position;
+    }
+
+    /**
+     * Sets a new velocity.
+     *
+     * @param velocity The new velocity.
+     */
+    public void setVelocity(Vector2D velocity) {
+        this.velocity = velocity;
+    }
+
+    /**
+     * Sets a new acceleration.
+     *
+     * @param acceleration The new acceleration.
+     */
+    public void setAcceleration(Vector2D acceleration) {
+        this.acceleration = acceleration;
+    }
+
+
+    // ================================================================================================================
+    // Verlet equations
+    // ================================================================================================================
 
     /**
      * Update the particle's state according to the Verlet's equations, using the given {@code deltaTime}.
@@ -154,9 +198,9 @@ public class Particle implements StateHolder<Particle.ParticleState> {
         acceleration = new Vector2D(xAcceleration, 0);
     }
 
-    /**
-     * Beeman equations.
-     */
+    // ================================================================================================================
+    // Beeman equations
+    // ================================================================================================================
 
     /**
      * Update the particle's state according to the Beeman's equations, using the given {@code deltaTime}.
@@ -233,12 +277,13 @@ public class Particle implements StateHolder<Particle.ParticleState> {
         return new Vector2D(xVelocity, 0);
     }
 
-    /**
-     * Order 5 Gear Predictor-corrector equations.
-     */
+    // ================================================================================================================
+    // Order 5 Gear Predictor-Corrector equations
+    // ================================================================================================================
 
     /**
-     * Update the particle's state using order 5 equations of the predictor-corrector algorithm, using the given {@code deltaTime}.
+     * Update the particle's state using order 5 equations of the predictor-corrector algorithm,
+     * using the given {@code deltaTime}.
      *
      * @param deltaTime The time variable of the linear motion equation.
      */
