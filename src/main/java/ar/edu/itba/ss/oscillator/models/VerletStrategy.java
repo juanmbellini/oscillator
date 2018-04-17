@@ -8,7 +8,7 @@ import java.util.function.Function;
 /**
  * Implementation of {@link UpdateStrategy} using Verlet's equations.
  */
-public class VerletStrategy implements UpdateStrategy {
+/* package */ class VerletStrategy implements UpdateStrategy {
 
     /**
      * The previous position, used for performing Verlet's recursive equations.
@@ -18,7 +18,7 @@ public class VerletStrategy implements UpdateStrategy {
     /**
      * Constructor.
      */
-    public VerletStrategy() {
+    /* package */ VerletStrategy() {
         this.previousPosition = null;
     }
 

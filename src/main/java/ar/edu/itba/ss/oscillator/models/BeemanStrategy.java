@@ -8,7 +8,7 @@ import java.util.function.Function;
 /**
  * Implementation of {@link UpdateStrategy} using Beeman's equations with prediction-correction.
  */
-public class BeemanStrategy implements UpdateStrategy {
+/* package */ class BeemanStrategy implements UpdateStrategy {
 
     /**
      * The previous acceleration.
@@ -23,7 +23,7 @@ public class BeemanStrategy implements UpdateStrategy {
     /**
      * Constructor.
      */
-    public BeemanStrategy() {
+    /* package */ BeemanStrategy() {
         this.previousAcceleration = null;
         this.nextAcceleration = null;
     }
