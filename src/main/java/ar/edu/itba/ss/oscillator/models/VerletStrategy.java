@@ -37,8 +37,13 @@ public class VerletStrategy implements UpdateStrategy {
                         .add(forceProvider.apply(particle).scalarMultiply(timeStep * timeStep / mass)))
                 .orElseGet(() -> {
                     // If here, the previous position has not been calculated yet, which means this is the first step
-                    // TODO: what do we do here?
-                    return null;
+                    final Vector2D force = forceProvider.apply(particle);
+                    // Calculate velocity at -deltaT
+                    final Vector2D previousVelocity = particle.getVelocity()
+                            .subtract(force.scalarMultiply(timeStep / mass));
+                    return actualPosition
+                            .subtract(previousVelocity.scalarMultiply(timeStep))
+                            .add(force.scalarMultiply((timeStep * timeStep) / (2 * mass)));
                 });
 
         // Calculate velocity
