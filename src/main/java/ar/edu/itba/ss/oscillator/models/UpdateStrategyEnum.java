@@ -28,7 +28,7 @@ public enum UpdateStrategyEnum {
     GEAR {
         @Override
         public UpdateStrategy getStrategyInstance() {
-            throw new RuntimeException("Not implemented");
+            return new GearStrategy();
         }
     };
 
