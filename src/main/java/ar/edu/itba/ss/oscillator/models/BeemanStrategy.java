@@ -3,6 +3,7 @@ package ar.edu.itba.ss.oscillator.models;
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Implementation of {@link UpdateStrategy} using Beeman's equations with prediction-correction.
@@ -17,7 +18,7 @@ public class BeemanStrategy implements UpdateStrategy {
     /**
      * The next acceleration (i.e will be used to store it here without having to recalculate it).
      */
-    private Vector2D nextAcceleration;
+    private Vector2D nextAcceleration; // TODO: make UpdateResults be subclassed for each strategy
 
     /**
      * Constructor.
@@ -36,42 +37,47 @@ public class BeemanStrategy implements UpdateStrategy {
         final Vector2D actualVelocity = particle.getVelocity();
         final Vector2D actualAcceleration = particle.getAcceleration();
         final double timeStep = dampedOscillator.getTimeStep();
+        final double mass = particle.getMass();
+        final Function<Particle, Vector2D> forceProvider = dampedOscillator.getForceProvider();
+
+        // Check if the previous position was set
+        // In case not, we are in the first step, so we need to calculate it
+        this.previousAcceleration = Optional.ofNullable(previousAcceleration)
+                .orElseGet(() -> {
+                    // If here, the previous acceleration has not been calculated yet, so this is the first step
+                    final Vector2D force = forceProvider.apply(particle);
+                    // Calculate velocity at -deltaT
+                    final Vector2D previousVelocity = particle.getVelocity()
+                            .subtract(force.scalarMultiply(timeStep / mass));
+                    // Calculate position at -deltaT
+                    final Vector2D previousPosition = actualPosition
+                            .subtract(previousVelocity.scalarMultiply(timeStep))
+                            .add(force.scalarMultiply((timeStep * timeStep) / (2 * mass)));
+
+                    return previousPosition.scalarMultiply(dampedOscillator.getSpringConstant())
+                            .add(previousVelocity.scalarMultiply(dampedOscillator.getViscousDampingCoeffcient()))
+                            .scalarMultiply(-1 / mass);
+                });
+
+        // When control reaches here, previous acceleration is already initialized with something
         // Calculate position
-        final Vector2D positionResult = Optional.ofNullable(previousAcceleration)
-                .map(prev -> actualPosition
-                        .add(actualVelocity.scalarMultiply(timeStep))
-                        .add(actualAcceleration.scalarMultiply((2 / 3) * timeStep * timeStep))
-                        .subtract(prev.scalarMultiply((1 / 6) * timeStep * timeStep)))
-                .orElseGet(() -> {
-                    // If here, the previous position has not been calculated yet, which means this is the first step
-                    // TODO: what do we do here?
-                    return null;
-                });
+        final Vector2D positionResult = actualPosition
+                .add(actualVelocity.scalarMultiply(timeStep))
+                .add(actualAcceleration.scalarMultiply((2d / 3d) * timeStep * timeStep))
+                .subtract(previousAcceleration.scalarMultiply((1d / 6d) * timeStep * timeStep));
         // Predict velocity
-        final Vector2D predictedVelocity = Optional.ofNullable(previousAcceleration)
-                .map(prev -> actualVelocity
-                        .add(actualAcceleration.scalarMultiply((3 / 2) * timeStep))
-                        .subtract(prev.scalarMultiply((1 / 2) * timeStep)))
-                .orElseGet(() -> {
-                    // If here, the previous position has not been calculated yet, which means this is the first step
-                    // TODO: what do we do here?
-                    return null;
-                });
+        final Vector2D predictedVelocity = actualVelocity
+                .add(actualAcceleration.scalarMultiply((3d / 2d) * timeStep))
+                .subtract(previousAcceleration.scalarMultiply((1d / 2d) * timeStep));
         // Calculate acceleration with predicted velocity
         this.nextAcceleration = positionResult.scalarMultiply(dampedOscillator.getSpringConstant())
                 .add(predictedVelocity.scalarMultiply(dampedOscillator.getViscousDampingCoeffcient()))
-                .scalarMultiply(-1);
+                .scalarMultiply(-1 / mass);
         // Correct velocity using the calculated acceleration
-        final Vector2D velocityResult = Optional.ofNullable(previousAcceleration)
-                .map(prev -> actualVelocity
-                        .add(nextAcceleration.scalarMultiply((1 / 3) * timeStep))
-                        .add(actualAcceleration.scalarMultiply((5 / 6) * timeStep))
-                        .subtract(prev.scalarMultiply((1 / 6) * timeStep)))
-                .orElseGet(() -> {
-                    // If here, the previous position has not been calculated yet, which means this is the first step
-                    // TODO: what do we do here?
-                    return null;
-                });
+        final Vector2D velocityResult = actualVelocity
+                .add(nextAcceleration.scalarMultiply((1d / 3d) * timeStep))
+                .add(actualAcceleration.scalarMultiply((5d / 6d) * timeStep))
+                .subtract(previousAcceleration.scalarMultiply((1d / 6d) * timeStep));
         return new UpdateResults(positionResult, velocityResult);
     }
 
@@ -82,6 +88,6 @@ public class BeemanStrategy implements UpdateStrategy {
         this.previousAcceleration = particle.getAcceleration();
         particle.setPosition(results.getPosition());
         particle.setVelocity(results.getVelocity());
-        particle.setAcceleration(this.nextAcceleration); // TODO: should we use this acceleration, which was calculated with predicted values? Or should we recalculate it with corrected values?
+        particle.setAcceleration(this.nextAcceleration);
     }
 }
