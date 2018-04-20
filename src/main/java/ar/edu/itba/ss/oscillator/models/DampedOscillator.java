@@ -71,8 +71,10 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
                             UpdateStrategyEnum updaterEnum, final double timeStep, final double totalTime) {
 
         final Vector2D initialPosition = new Vector2D(initialXPosition, 0d);
-        final Vector2D initialVelocity = new Vector2D(-viscousDampingCoefficient / (2 * particleMass), 0d); // TODO: check units issue (is acceleration?)
-        final Vector2D initialAcceleration = Vector2D.ZERO;
+        final Vector2D initialVelocity = new Vector2D(-viscousDampingCoefficient / (2 * particleMass), 0d);
+        final Vector2D initialAcceleration = initialPosition.scalarMultiply(springConstant)
+                .add(initialVelocity.scalarMultiply(viscousDampingCoefficient))
+                .scalarMultiply(-1 / particleMass);
 
         this.particle = new Particle(particleMass, initialPosition, initialVelocity, initialAcceleration);
         this.springConstant = springConstant;
