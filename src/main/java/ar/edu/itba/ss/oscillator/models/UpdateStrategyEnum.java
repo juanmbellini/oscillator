@@ -9,8 +9,8 @@ public enum UpdateStrategyEnum {
      */
     VERLET {
         @Override
-        public UpdateStrategy getStrategyInstance() {
-            return new VerletStrategy();
+        public Updater getStrategyInstance(DampedOscillator dampedOscillator) {
+            return new VerletUpdater(dampedOscillator);
         }
     },
     /**
@@ -18,8 +18,8 @@ public enum UpdateStrategyEnum {
      */
     BEEMAN {
         @Override
-        public UpdateStrategy getStrategyInstance() {
-            return new BeemanStrategy();
+        public Updater getStrategyInstance(DampedOscillator dampedOscillator) {
+            return new BeemanUpdater(dampedOscillator);
         }
     },
     /**
@@ -27,15 +27,16 @@ public enum UpdateStrategyEnum {
      */
     GEAR {
         @Override
-        public UpdateStrategy getStrategyInstance() {
-            return new GearStrategy();
+        public Updater getStrategyInstance(DampedOscillator dampedOscillator) {
+            return new GearUpdater(dampedOscillator);
         }
     };
 
     /**
-     * Builds an {@link UpdateStrategy} according to the enum value.
+     * Builds an {@link Updater} according to the enum value.
      *
-     * @return The buils {@link UpdateStrategy}.
+     * @param dampedOscillator The {@link DampedOscillator} the built {@link Updater} will update.
+     * @return The built {@link Updater}.
      */
-    public abstract UpdateStrategy getStrategyInstance();
+    public abstract Updater getStrategyInstance(DampedOscillator dampedOscillator);
 }

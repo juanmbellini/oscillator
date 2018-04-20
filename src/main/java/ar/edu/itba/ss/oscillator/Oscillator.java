@@ -4,7 +4,8 @@ import ar.edu.itba.ss.g7.engine.io.DataSaver;
 import ar.edu.itba.ss.g7.engine.simulation.SimulationEngine;
 import ar.edu.itba.ss.oscillator.io.ProgramArguments;
 import ar.edu.itba.ss.oscillator.models.DampedOscillator;
-import ar.edu.itba.ss.oscillator.models.UpdateStrategy;
+import ar.edu.itba.ss.oscillator.models.UpdateStrategyEnum;
+import ar.edu.itba.ss.oscillator.models.Updater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -57,12 +58,12 @@ public class Oscillator implements CommandLineRunner, InitializingBean {
         final double initialX = programArguments.getInitialXPosition();
         final double springConstant = programArguments.getSpringConstant();
         final double viscousDampingConstant = programArguments.getViscousDampingCoefficient();
-        final UpdateStrategy strategy = programArguments.getUpdateStrategyEnum().getStrategyInstance();
+        final UpdateStrategyEnum updaterEnum = programArguments.getUpdateStrategyEnum();
         final double step = programArguments.getTimeStep();
         final double time = programArguments.getTotalTime();
 
         final DampedOscillator dampedOscillator =
-                new DampedOscillator(mass, initialX, springConstant, viscousDampingConstant, strategy, step, time);
+                new DampedOscillator(mass, initialX, springConstant, viscousDampingConstant, updaterEnum, step, time);
 
         this.engine = new SimulationEngine<>(dampedOscillator);
         this.ovitoFileSaver = ovitoFileSaver;

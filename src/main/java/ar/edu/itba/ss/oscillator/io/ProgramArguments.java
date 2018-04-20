@@ -1,7 +1,7 @@
 package ar.edu.itba.ss.oscillator.io;
 
 import ar.edu.itba.ss.oscillator.models.Particle;
-import ar.edu.itba.ss.oscillator.models.UpdateStrategy;
+import ar.edu.itba.ss.oscillator.models.Updater;
 import ar.edu.itba.ss.oscillator.models.UpdateStrategyEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +35,7 @@ public class ProgramArguments {
     private final double viscousDampingCoefficient;
 
     /**
-     * The {@link UpdateStrategyEnum} that will provide the {@link UpdateStrategy} to the system.
+     * The {@link UpdateStrategyEnum} that will provide the {@link Updater} to the system.
      */
     private final UpdateStrategyEnum updateStrategyEnum;
 
@@ -58,7 +58,7 @@ public class ProgramArguments {
      * @param springConstant            The spring constant (in kilograms over square seconds).
      * @param viscousDampingCoefficient The viscous damping coefficient (in kilograms over seconds).
      * @param updateStrategyEnum        The {@link UpdateStrategyEnum}
-     *                                  that will provide the {@link UpdateStrategy} to the system.
+     *                                  that will provide the {@link Updater} to the system.
      * @param timeStep                  The time step (i.e how much time elapses between two update events).
      * @param totalTime                 The total oscillating time.
      */
@@ -109,7 +109,7 @@ public class ProgramArguments {
     }
 
     /**
-     * @return The {@link UpdateStrategyEnum} that will provide the {@link UpdateStrategy} to the system.
+     * @return The {@link UpdateStrategyEnum} that will provide the {@link Updater} to the system.
      */
     public UpdateStrategyEnum getUpdateStrategyEnum() {
         return updateStrategyEnum;

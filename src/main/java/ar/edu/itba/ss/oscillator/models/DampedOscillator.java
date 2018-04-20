@@ -24,7 +24,7 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
     /**
      * The viscous damping coefficient (in kilograms over seconds).
      */
-    private final double viscousDampingCoeffcient;
+    private final double viscousDampingCoefficient;
 
     /**
      * A {@link Function} that takes a {@link Particle} and returns A {@link Vector2D}
@@ -33,9 +33,9 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
     private final Function<Particle, Vector2D> forceProvider;
 
     /**
-     * The {@link UpdateStrategy} used to calculate new values.
+     * The {@link Updater} used to calculate new values.
      */
-    private final UpdateStrategy updateStrategy;
+    private final Updater updater;
 
     /**
      * The time step (i.e how much time elapses between two update events).
@@ -61,13 +61,14 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
      *                                  (i.e if positive, it is stretched; if negative, it is compressed).
      * @param springConstant            The spring constant (in kilograms over square seconds).
      * @param viscousDampingCoefficient The viscous damping coefficient (in kilograms over seconds).
-     * @param updateStrategy            The {@link UpdateStrategy} used to calculate new values.
+     * @param updaterEnum               The {@link UpdateStrategyEnum} used to built the {@link Updater}
+     *                                  that calculate new values and updates this damper oscillator.
      * @param timeStep                  The time step (i.e how much time elapses between two update events).
      * @param totalTime                 The total oscillating time.
      */
     public DampedOscillator(final double particleMass, final double initialXPosition,
                             final double springConstant, final double viscousDampingCoefficient,
-                            UpdateStrategy updateStrategy, final double timeStep, final double totalTime) {
+                            UpdateStrategyEnum updaterEnum, final double timeStep, final double totalTime) {
 
         final Vector2D initialPosition = new Vector2D(initialXPosition, 0d);
         final Vector2D initialVelocity = new Vector2D(-viscousDampingCoefficient / (2 * particleMass), 0d); // TODO: check units issue (is acceleration?)
@@ -75,17 +76,17 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
 
         this.particle = new Particle(particleMass, initialPosition, initialVelocity, initialAcceleration);
         this.springConstant = springConstant;
-        this.viscousDampingCoeffcient = viscousDampingCoefficient;
+        this.viscousDampingCoefficient = viscousDampingCoefficient;
         this.forceProvider = p -> {
             final Vector2D dampingForce = p.getVelocity().scalarMultiply(viscousDampingCoefficient);
             final Vector2D springForce = p.getPosition().scalarMultiply(springConstant);
             return springForce.add(dampingForce).scalarMultiply(-1);
         };
-
-        this.updateStrategy = updateStrategy;
         this.timeStep = timeStep;
         this.totalTime = totalTime;
         this.actualTime = 0d;
+        // Initialize the updater at the end.
+        this.updater = updaterEnum.getStrategyInstance(this);
     }
 
     /**
@@ -105,8 +106,8 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
     /**
      * @return The viscous damping coefficient (in kilograms over seconds).
      */
-    public double getViscousDampingCoeffcient() {
-        return viscousDampingCoeffcient;
+    public double getViscousDampingCoefficient() {
+        return viscousDampingCoefficient;
     }
 
     /**
@@ -140,7 +141,7 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
 
     @Override
     public void update() {
-        this.updateStrategy.update(this);
+        this.updater.update();
         this.actualTime += timeStep;
     }
 
