@@ -27,6 +27,21 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
     private final double viscousDampingCoefficient;
 
     /**
+     * The initial position of the {@link Particle} (i.e used for restarting).
+     */
+    private final Vector2D initialPosition;
+
+    /**
+     * The initial velocity of the {@link Particle} (i.e used for restarting).
+     */
+    private final Vector2D initialVelocity;
+
+    /**
+     * The initial acceleration of the {@link Particle} (i.e used for restarting).
+     */
+    private final Vector2D initialAcceleration;
+
+    /**
      * A {@link Function} that takes a {@link Particle} and returns A {@link Vector2D}
      * that represents the acceleration the {@link Particle} is suffering.
      */
@@ -52,7 +67,6 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
      */
     private double actualTime;
 
-
     /**
      * Constructor.
      *
@@ -70,9 +84,9 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
                             final double springConstant, final double viscousDampingCoefficient,
                             UpdateStrategyEnum updaterEnum, final double timeStep, final double totalTime) {
 
-        final Vector2D initialPosition = new Vector2D(initialXPosition, 0d);
-        final Vector2D initialVelocity = new Vector2D(-viscousDampingCoefficient / (2 * particleMass), 0d);
-        final Vector2D initialAcceleration = initialPosition.scalarMultiply(springConstant)
+        this.initialPosition = new Vector2D(initialXPosition, 0d);
+        this.initialVelocity = new Vector2D(-viscousDampingCoefficient / (2 * particleMass), 0d);
+        this.initialAcceleration = initialPosition.scalarMultiply(springConstant)
                 .add(initialVelocity.scalarMultiply(viscousDampingCoefficient))
                 .scalarMultiply(-1 / particleMass);
 
@@ -149,7 +163,10 @@ public class DampedOscillator implements System<DampedOscillator.DampedOscillato
 
     @Override
     public void restart() {
-        // TODO: implement?
+        actualTime = 0;
+        particle.setPosition(initialPosition);
+        particle.setVelocity(initialVelocity);
+        particle.setAcceleration(initialAcceleration);
     }
 
     @Override
