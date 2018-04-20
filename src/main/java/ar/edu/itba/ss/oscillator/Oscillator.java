@@ -5,7 +5,6 @@ import ar.edu.itba.ss.g7.engine.simulation.SimulationEngine;
 import ar.edu.itba.ss.oscillator.io.ProgramArguments;
 import ar.edu.itba.ss.oscillator.models.DampedOscillator;
 import ar.edu.itba.ss.oscillator.models.UpdateStrategyEnum;
-import ar.edu.itba.ss.oscillator.models.Updater;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,6 +24,11 @@ public class Oscillator implements CommandLineRunner, InitializingBean {
      * The {@link Logger} object.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Oscillator.class);
+
+    /**
+     * Epsilon to be used to compare times.
+     */
+    private static final double EPSILON = Math.pow(10, -12);
 
     /**
      * The {@link DataSaver} for the ovito file.
@@ -91,7 +95,7 @@ public class Oscillator implements CommandLineRunner, InitializingBean {
      */
     private void simulate() {
         LOGGER.info("Starting simulation...");
-        engine.simulate(oscillator -> oscillator.getActualTime() >= oscillator.getTotalTime());
+        engine.simulate(oscillator -> oscillator.getTotalTime() - oscillator.getActualTime() <= EPSILON);
         LOGGER.info("Finished simulation");
     }
 
