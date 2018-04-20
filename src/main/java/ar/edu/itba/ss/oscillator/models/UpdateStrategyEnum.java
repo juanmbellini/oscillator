@@ -5,12 +5,21 @@ package ar.edu.itba.ss.oscillator.models;
  */
 public enum UpdateStrategyEnum {
     /**
-     * Updates the system according to Verlet's equations.
+     * Updates the system according to Verlet's equations (normal implementation).
      */
     VERLET {
         @Override
         public Updater getStrategyInstance(DampedOscillator dampedOscillator) {
             return new VerletUpdater(dampedOscillator);
+        }
+    },
+    /**
+     * Updates the system according to Verlet's equations (using own trick).
+     */
+    VERLET_TRICK {
+        @Override
+        public Updater getStrategyInstance(DampedOscillator dampedOscillator) {
+            return new VerletTrickUpdater(dampedOscillator);
         }
     },
     /**
