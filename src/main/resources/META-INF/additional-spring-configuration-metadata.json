@@ -1,6 +1,31 @@
 {
   "properties": [
     {
+      "name": "custom.system.particle-mass",
+      "type": "java.lang.Double",
+      "description": "The mass of the oscillating particle."
+    },
+    {
+      "name": "custom.system.initial-x",
+      "type": "java.lang.Double",
+      "description": "The initial 'x' component of the position of the particle."
+    },
+    {
+      "name": "custom.system.spring-constant",
+      "type": "java.lang.Double",
+      "description": "The spring constant."
+    },
+    {
+      "name": "custom.system.viscous-damping-coefficient",
+      "type": "java.lang.Double",
+      "description": "The viscous damping coefficient."
+    },
+    {
+      "name": "custom.simulation.strategy",
+      "type": "ar.edu.itba.ss.oscillator.models.UpdateStrategyEnum",
+      "description": "The movement integration strategy (i.e VERLET, BEEMAN, or GEAR)."
+    },
+    {
       "name": "custom.simulation.time-step",
       "type": "java.lang.Double",
       "description": "The time step (i.e how much time elapses in one simulation step)."
@@ -19,6 +44,11 @@
       "name": "custom.output.ovito",
       "type": "java.lang.String",
       "description": "The path for the Ovito file."
+    },
+    {
+      "name": "custom.output.movement",
+      "type": "java.lang.String",
+      "description": "The path for the Movement file."
     }
   ]
 }
